@@ -20,3 +20,25 @@ var notes = []note{
 func GetAllNotes(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, notes)
 }
+func GetNoteByID(c *gin.Context) {
+	id := c.Param("id")
+
+	for _, a := range notes {
+		if a.ID == id {
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "note not found"})
+}
+func PostNote(c *gin.Context) {
+	var newNotes note
+
+	if err := c.BindJSON(&newNotes); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
+	}
+
+	notes = append(notes, newNotes)
+	c.IndentedJSON(http.StatusCreated, newNotes)
+}
